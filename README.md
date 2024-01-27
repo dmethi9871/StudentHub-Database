@@ -1,5 +1,6 @@
+![student datamanagment](https://github.com/dmethi9871/StudentHub-Database/assets/76877961/2c16243c-8e90-4984-b96d-ac177e83788d)
+![studentdb](https://github.com/dmethi9871/StudentHub-Database/assets/76877961/5f60e3bd-e579-4c64-9943-c79845deeca8)
 
-```markdown
 # Student Data Management System
 
 This application is designed to load student data from a CSV file into a database. The data includes student details such as name, age, class, address, and hobbies. The information is stored in three tables: one for basic student information, one for address details, and one for hobbies. These tables are appropriately connected using foreign keys.
