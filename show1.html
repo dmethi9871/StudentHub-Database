@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpine.js Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+</head>
+<body>
+
+<!-- Attribute Examples -->
+<div x-data="{ message: 'Hello, Alpine!', isVisible: true, items: ['Item 1', 'Item 2', 'Item 3'], condition: true }">
+    <p x-text="message"></p>
+
+    <div x-show="isVisible">
+        This is visible when isVisible is true.
+    </div>
+
+    <ul>
+        <li x-for="item in items" x-text="item"></li>
+    </ul>
+
+    <template x-if="condition">
+        <p>This is shown when condition is true.</p>
+    </template>
+    <template x-else>
+        <p>This is shown when condition is false.</p>
+    </template>
+</div>
+
+<!-- Property and Method Examples -->
+<div x-data="{ count: 0, user: { name: 'John', age: 25 }, toggleVisibility: function() { this.isVisible = !this.isVisible; }, updateMessage: function() { this.message = 'Updated!'; } }">
+    <button @click="count++">Increment Count</button>
+    <p x-text="count"></p>
+
+    <p x-text="user.name"></p>
+    <p x-text="user.age"></p>
+
+    <button @click="toggleVisibility">Toggle Visibility</button>
+    <p x-show="isVisible">This will toggle visibility</p>
+
+    <p x-text="message"></p>
+    <button @click="updateMessage">Update Message</button>
+</div>
+
+</body>
+</html>

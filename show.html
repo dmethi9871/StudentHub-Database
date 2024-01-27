@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Data</title>
+    <link rel="stylesheet" href="/styleShow.css">    
+</head>
+
+<body>
+    <h1>Show Data</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th><button onclick="sortTable('ID')">ID</button></th>
+                <th><button onclick="sortTable('Name')">Name</button></th>
+                <th><button onclick="sortTable('Age')">Age</button></th>
+                <th><button onclick="sortTable('Class')">Class</button></th>
+                <th><button onclick="sortTable('Street')">Street</button></th>
+                <th><button onclick="sortTable('City')">City</button></th>
+                <th><button onclick="sortTable('State')">State</button></th>
+                <th><button onclick="sortTable('Zipcode')">Zipcode</button></th>
+                <th><button onclick="sortTable('HobbyName1')">Hobby 1</button></th>
+                <th><button onclick="sortTable('HobbyName2')">Hobby 2</button></th>
+                <th><button onclick="sortTable('HobbyName3')">Hobby 3</button></th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="data-table-body"></tbody>
+    </table>
+
+    <div id="edit-form" style="display: none;">
+        <h2>Edit Record</h2>
+        <form id="editRecordForm">
+            <label for="editName">Name:</label>
+            <input type="text" id="editName" name="editName" required>
+            
+            <label for="editAge">Age:</label>
+            <input type="number" id="editAge" name="editAge" required>
+            
+            <label for="editClass">Class:</label>
+            <input type="text" id="editClass" name="editClass" required>
+            
+            <label for="editStreet">Street:</label>
+            <input type="text" id="editStreet" name="editStreet" required>
+            
+            <label for="editCity">City:</label>
+            <input type="text" id="editCity" name="editCity" required>
+            
+            <label for="editState">State:</label>
+            <input type="text" id="editState" name="editState" required>
+            
+            <label for="editZipcode">Zipcode:</label>
+            <input type="text" id="editZipcode" name="editZipcode" required>
+            
+            <label for="editHobby1">Hobby 1:</label>
+            <input type="text" id="editHobby1" name="editHobby1" required>
+            
+            <label for="editHobby2">Hobby 2:</label>
+            <input type="text" id="editHobby2" name="editHobby2" required>
+            
+            <label for="editHobby3">Hobby 3:</label>
+            <input type="text" id="editHobby3" name="editHobby3" required>
+    
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    
+
+    <script>
+        function deleteRecord(event, student_id) {
+            event.preventDefault();
+            fetch(`/api/delete-student/${student_id}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                fetchData();
+            })
+            .catch(error => console.error('Error deleting record:', error));
+        }
+    
+        function editRecord(student_id) {
+            fetch(`/api/combined-data/${student_id}`)
+                .then(response => response.json())
+                .then(record => {
+                    document.getElementById('editName').value = record.Name;
+                    document.getElementById('editAge').value = record.Age;
+                    document.getElementById('editClass').value = record.Class;
+                    document.getElementById('editStreet').value = record.Street;
+                    document.getElementById('editCity').value = record.City;
+                    document.getElementById('editState').value = record.State;
+                    document.getElementById('editZipcode').value = record.Zipcode;
+                    document.getElementById('editHobby1').value = record.Hobby1;
+                    document.getElementById('editHobby2').value = record.Hobby2;
+                    document.getElementById('editHobby3').value = record.Hobby3;
+    
+                    document.getElementById('edit-form').style.display = 'block';
+                    document.getElementById('editRecordForm').onsubmit = function (event) {
+                        event.preventDefault();
+                        updateRecord(student_id);
+                    };
+                })
+                .catch(error => console.error('Error fetching record for edit:', error));
+        }
+    
+        function updateRecord(student_id) {
+            var updatedName = document.getElementById('editName').value;
+            var updatedAge = document.getElementById('editAge').value;
+            var updatedClass = document.getElementById('editClass').value;
+            var updatedStreet = document.getElementById('editStreet').value;
+            var updatedCity = document.getElementById('editCity').value;
+            var updatedState = document.getElementById('editState').value;
+            var updatedZipcode = document.getElementById('editZipcode').value;
+            var updatedHobby1 = document.getElementById('editHobby1').value;
+            var updatedHobby2 = document.getElementById('editHobby2').value;
+            var updatedHobby3 = document.getElementById('editHobby3').value;
+    
+            fetch(`/api/update-student/${student_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: updatedName,
+                    age: updatedAge,
+                    className: updatedClass,
+                    street: updatedStreet,
+                    city: updatedCity,
+                    state: updatedState,
+                    zipcode: updatedZipcode,
+                    hobby1: updatedHobby1,
+                    hobby2: updatedHobby2,
+                    hobby3: updatedHobby3,
+                }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.message);
+                document.getElementById('edit-form').style.display = 'none';
+                fetchData();
+            })
+            .catch(error => console.error('Error updating record:', error));
+        }
+
+
+        function sortTable(column) {
+            fetch('/api/combined-data')
+                .then(response => response.json())
+                .then(data => {
+                    data.sort((a, b) => {
+                        if (a[column] < b[column]) return -1;
+                        if (a[column] > b[column]) return 1;
+                        return 0;
+                    });
+
+                    const tableBody = document.getElementById('data-table-body');
+                    tableBody.innerHTML = '';
+
+                    data.forEach(record => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${record.ID}</td>
+                            <td>${record.Name}</td>
+                            <td>${record.Age}</td>
+                            <td>${record.Class}</td>
+                            <td>${record.Street}</td>
+                            <td>${record.City}</td>
+                            <td>${record.State}</td>
+                            <td>${record.Zipcode}</td>
+                            <td>${record.Hobby1}</td>
+                            <td>${record.Hobby2}</td>
+                            <td>${record.Hobby3}</td>
+                            <td>
+                                <a href="#" onclick="editRecord(${record.ID})">Edit</a>
+                                <a href="#" onclick="deleteRecord(event, ${record.ID})">Delete</a>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching and sorting data:', error));
+        }
+
+        function fetchData() {
+            fetch('/api/combined-data')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('data-table-body');
+                    tableBody.innerHTML = '';
+
+                    data.forEach(record => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${record.ID}</td>
+                            <td>${record.Name}</td>
+                            <td>${record.Age}</td>
+                            <td>${record.Class}</td>
+                            <td>${record.Street}</td>
+                            <td>${record.City}</td>
+                            <td>${record.State}</td>
+                            <td>${record.Zipcode}</td>
+                            <td>${record.Hobby1}</td>
+                            <td>${record.Hobby2}</td>
+                            <td>${record.Hobby3}</td>
+                            <td>
+                                <a href="#" onclick="editRecord(${record.ID})">Edit</a>
+                                <a href="#" onclick="deleteRecord(event, ${record.ID})">Delete</a>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        fetchData();
+    </script>
+</body>
+
+</html>
